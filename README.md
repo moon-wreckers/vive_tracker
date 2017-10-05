@@ -1,4 +1,4 @@
-This tutorial will guide you through the setup of the HTC Vive Tracker in Python 3.6 on Ubuntu 14.04.
+This ROS Indigo Node publishes pose data from HTC Vive Tracker Ubuntu 14.04.
 
 
 # Prerequesites
@@ -43,6 +43,17 @@ SteamVR requires >4GB disk space
    1. Change the third line from `"requireHmd" : true,` to `"requireHmd" : false,`
 
    1. Save and exit the settings document.
+   
+8. Install this project in your catkin workspace.
+
+```
+cd ~/catkin_ws/src/
+git clone https://github.com/moon-wreckers/vive_tracker.git
+cd ~/catkin_ws
+catkin_make
+```
+
+9. 
 
 # Usage
 1. Start SteamVR from the Steam Library
@@ -53,12 +64,14 @@ SteamVR requires >4GB disk space
 
 4. Ensure the Lighthouse base stations are turned on, facing each other, and have green lights showing on them. Place the tracker in view of the Base Stations. The SteamVR overlay should now show two green square Base Stations and a solid green Tracker hexagon. The tracker is now working.
 
-5. Start the tracker_test.py python script to view the x y z roll pitch yaw output from the tracker.
+5. In one terminal start ros with `roscore`, in another terminal run this ROS node. 
 
 ```
-cd triad_openvr/
-`python3.6 ./tracker_test.py
-```
+source ~/catkin_ws/devel/setup.bash
+rosrun vive_tracker vive_tracker.py
+``` 
+
+   1. Now open another terminal and run `rostopic echo /vive_tracker` to view the x y z roll pitch yaw output from the tracker.
 
 6. If everything went well you should now see the data coming from the Tracker. Use tracker_test.py as a sample program to work from to integrate into your project.
 
