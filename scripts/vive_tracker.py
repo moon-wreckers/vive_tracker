@@ -43,7 +43,7 @@ def vive_tracker():
                          (tfVals[3],tfVals[4],tfVals[5],tfVals[6]),
                          rospy.Time.now(),
                          "vive_tracker",
-                         "new_map")
+                         "map")
 #        pub.publish(txt)
         rate.sleep()
 

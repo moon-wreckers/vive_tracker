@@ -64,7 +64,11 @@ catkin_make
 
 4. Ensure the Lighthouse base stations are turned on, facing each other, and have green lights showing on them. Place the tracker in view of the Base Stations. The SteamVR overlay should now show two green square Base Stations and a solid green Tracker hexagon. The tracker is now working.
 
-5. In one terminal start ros with `roscore`, in another terminal run this ROS node. 
+5. (Optional) Start RViz in another terminal with `rviz`, and run the below command to rotate the map frame to be the correct orientation for RViz.
+
+`rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 1.5707 world map 100`
+
+6. In one terminal start ros with `roscore`, in another terminal run this ROS node. 
 
 ```
 source ~/catkin_ws/devel/setup.bash
@@ -73,7 +77,7 @@ rosrun vive_tracker vive_tracker.py
 
    1. Now open another terminal and run `rostopic echo /vive_tracker` to view the x y z roll pitch yaw output from the tracker.
 
-6. If everything went well you should now see the data coming from the Tracker. Use tracker_test.py as a sample program to work from to integrate into your project.
+7. If everything went well you should now see the data coming from the Tracker. Use tracker_test.py as a sample program to work from to integrate into your project.
 
 # Command Line
 
@@ -87,9 +91,6 @@ To kill the SteamVR process:
 
 `sudo killall -9 vrmonitor`
 
-To display this in RViz create a map frame in one terminal. This command also rotates the map 90 deg (pi/2 radians) about the x(I think) axis.
-
-`rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 1.5707 map new_map 100`
 
 
 
