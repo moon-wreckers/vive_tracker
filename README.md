@@ -87,6 +87,12 @@ To kill the SteamVR process:
 
 `sudo killall -9 vrmonitor`
 
+To display this in RViz create a map frame in one terminal. This command also rotates the map 90 deg (pi/2 radians) about the x(I think) axis.
+
+`rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 1.5707 map new_map 100`
+
+
+
 # Links
 
 This is based off of Triad Semiconductor's awesome tutorial found here:

@@ -5,6 +5,7 @@ import triad_openvr
 import time
 import sys
 import tf
+from pyquaternion import Quaternion
 
 try:
   v = triad_openvr.triad_openvr()
@@ -26,21 +27,24 @@ def vive_tracker():
     pub = rospy.Publisher('vive_tracker_euler', String, queue_size=10)
     #rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(30) # 10hz
+    tfVals = [None] * 7
     while not rospy.is_shutdown():
         #hello_str = "hello world %s" % rospy.get_time()
         txt = ""
+        eulerPose = [None] * 6
         for i, each in enumerate(v.devices["tracker_1"].get_pose_euler()):
             txt += "%.4f" % each
             txt += " "
-        #print("")
-        #print("\r" + txt)
-        rospy.loginfo(txt)
-        br.sendTransform((v.devices["tracker_1"].get_pose_quaternion()),
+            eulerPose[i] = each
+        for i, each in enumerate(v.devices["tracker_1"].get_pose_quaternion()):
+            tfVals[i] = each
+        
+        br.sendTransform((tfVals[0],tfVals[1],tfVals[2]),
+                         (tfVals[3],tfVals[4],tfVals[5],tfVals[6]),
                          rospy.Time.now(),
                          "vive_tracker",
-                         "map")
-
-        pub.publish(txt)
+                         "new_map")
+#        pub.publish(txt)
         rate.sleep()
 
 if __name__ == '__main__':
