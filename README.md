@@ -64,9 +64,12 @@ catkin_make
 
 4. Ensure the Lighthouse base stations are turned on, facing each other, and have green lights showing on them. Place the tracker in view of the Base Stations. The SteamVR overlay should now show two green square Base Stations and a solid green Tracker hexagon. The tracker is now working.
 
-5. (Optional) Start RViz in another terminal with `rviz`, and run the below command to rotate the map frame to be the correct orientation for RViz.
+5. (Optional) Start RViz in another terminal with `rviz`, and run the below commands in seperate terminals to rotate the map frame to be the correct orientation for RViz.
 
-`rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 1.5707 world map 100`
+```
+rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 0.0 world map 100
+rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 1.5707 world map 100
+```
 
 6. In one terminal start ros with `roscore`, in another terminal run this ROS node. 
 
