@@ -6,7 +6,18 @@ import time
 import sys
 import tf
 
-v = triad_openvr.triad_openvr()
+try:
+  v = triad_openvr.triad_openvr()
+except Exception as ex:
+  if (type(ex).__name__ == 'OpenVRError' and ex.args[0] == 'VRInitError_Init_HmdNotFoundPresenceFailed (error number 126)'):
+    print('Is SteamVR turned on? Cannot contact VR server.')
+  else:
+    template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+    message = template.format(type(ex).__name__, ex.args)
+    print message
+  print(ex.args)
+  quit()
+
 v.print_discovered_objects()
 
 def vive_tracker():
