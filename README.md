@@ -22,7 +22,7 @@ SteamVR requires >4GB disk space
 
    1. Click VR
 
-   1. Click under Tools there should be SteamVR. Click the blue Install button.
+   1. On the left you should now see SteamVR. Select it and click the the blue Install button.
 
 1. Make a Symbolic Link from libudev.so.0 to libudev.so.1 for SteamVR to use
 
