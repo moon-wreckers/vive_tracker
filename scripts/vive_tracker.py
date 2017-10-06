@@ -5,7 +5,6 @@ import triad_openvr
 import time
 import sys
 import tf
-from pyquaternion import Quaternion
 
 try:
   v = triad_openvr.triad_openvr()
