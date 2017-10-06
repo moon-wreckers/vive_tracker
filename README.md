@@ -32,10 +32,6 @@ SteamVR requires >4GB disk space
 
 `sudo pip install -U pip openvr`
 
-6. Clone triad_openvr in a working directory
-
-`git clone https://github.com/TriadSemi/triad_openvr.git`
-
 7. (Optional) Disable the headset requirement with your preferred text editor
 
 `gedit ~/.steam/steam/steamapps/common/SteamVR/resources/settings/default.vrsettings`
