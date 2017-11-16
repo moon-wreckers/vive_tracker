@@ -1,7 +1,9 @@
 <launch>
+   <group ns="vive"> 
       <node pkg="tf" type="static_transform_publisher" name="map" args="0.0 0.0 0.0 0.0 0.0 0.0 world map 100" />
       <node pkg="tf" type="static_transform_publisher" name="vive_world" args="0.0 0.0 0.0 0.0 0.0 -1.5707 map vive_world 100" />
 
       <node pkg="vive_tracker" name="vive_tracker" type="vive_tracker.py" output="screen">
       </node>
+   </group>
 </launch>

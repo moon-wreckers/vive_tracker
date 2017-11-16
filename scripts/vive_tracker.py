@@ -5,6 +5,7 @@ import triad_openvr
 import time
 import sys
 import tf
+import numpy as np
 
 print('\n')
 try:
@@ -26,61 +27,33 @@ v.print_discovered_objects()
 
 def vive_tracker():
     rospy.init_node('vive_tracker_frame')
-    br = tf.TransformBroadcaster()
-    pub_tracker = rospy.Publisher('vive_tracker_euler', String, queue_size=10)
-    pub_reference_1 = rospy.Publisher('vive_reference_euler_1', String, queue_size=10)
-    pub_reference_2 = rospy.Publisher('vive_reference_euler_2', String, queue_size=10)
-    #rospy.init_node('talker', anonymous=True)
+    broadcaster = { }
+    publisher = { }
     rate = rospy.Rate(30) # 10hz
-    tfVals = [None] * 7
     while not rospy.is_shutdown():
-        #hello_str = "hello world %s" % rospy.get_time()
-        txt = ""
-        eulerPose = [None] * 6
-
-        for i, each in enumerate(v.devices["tracking_reference_1"].get_pose_euler()):
-            txt += "%.4f" % each
-            txt += " "
-            eulerPose[i] = each
-        for i, each in enumerate(v.devices["tracking_reference_1"].get_pose_quaternion()):
-            tfVals[i] = each
-        
-        br.sendTransform((tfVals[0],tfVals[1],tfVals[2]),
-                         (tfVals[3],tfVals[4],tfVals[5],tfVals[6]),
-                         rospy.Time.now(),
-                         "vive_tracking_reference_1",
-                         "vive_world")
-        pub_reference_1.publish('  X: ' + str(eulerPose[0]) + '  Y: ' + str(eulerPose[1]) + '  Z: ' + str(eulerPose[2]) + '  Pitch: ' + str(eulerPose[5]) + '  Yaw: ' + str(eulerPose[4]) + '  Roll: ' + str(eulerPose[3]))
-        if "tracking_reference_2" in v.devices:
-            for i, each in enumerate(v.devices["tracking_reference_2"].get_pose_euler()):
-                txt += "%.4f" % each
-                txt += " "
-                eulerPose[i] = each
-            for i, each in enumerate(v.devices["tracking_reference_2"].get_pose_quaternion()):
-                tfVals[i] = each
+        # For each Vive Device
+        for deviceName in v.devices:
             
-            br.sendTransform((tfVals[0],tfVals[1],tfVals[2]),
-                             (tfVals[3],tfVals[4],tfVals[5],tfVals[6]),
-                             rospy.Time.now(),
-                             "vive_tracking_reference_2",
-                             "vive_world")
-            pub_reference_2.publish('  X: ' + str(eulerPose[0]) + '  Y: ' + str(eulerPose[1]) + '  Z: ' + str(eulerPose[2]) + '  Pitch: ' + str(eulerPose[5]) + '  Yaw: ' + str(eulerPose[4]) + '  Roll: ' + str(eulerPose[3]))
-
-        for i, each in enumerate(v.devices["tracker_1"].get_pose_euler()):
-            txt += "%.4f" % each
-            txt += " "
-            eulerPose[i] = each
-        for i, each in enumerate(v.devices["tracker_1"].get_pose_quaternion()):
-            tfVals[i] = each
-        
-        br.sendTransform((tfVals[0],tfVals[1],tfVals[2]),
-                         (tfVals[3],tfVals[4],tfVals[5],tfVals[6]),
-                         rospy.Time.now(),
-                         "vive_tracker_1",
-                         "vive_world")
-        pub_tracker.publish('  X: ' + str(eulerPose[0]) + '  Y: ' + str(eulerPose[1]) + '  Z: ' + str(eulerPose[2]) + '  Pitch: ' + str(eulerPose[5]) + '  Yaw: ' + str(eulerPose[4]) + '  Roll: ' + str(eulerPose[3]))
+            # Broadcast the TF as a quaternion
+            [x, y, z, qw, qx, qy, qz] = v.devices[deviceName].get_pose_quaternion()
+            time = rospy.Time.now()
+            if deviceName not in broadcaster:
+                broadcaster[deviceName] = tf.TransformBroadcaster()
+            
+            broadcaster[deviceName].sendTransform((x,y,z),
+                            (qw,qx,qy,qz),
+                            time,
+                            deviceName,
+                            "vive_world")
+            # Publish a topic as euler angles
+            [x,y,z,yaw,pitch,roll] = v.devices[deviceName].get_pose_euler()
+            if deviceName not in publisher:
+                publisher[deviceName] = rospy.Publisher(deviceName, String, queue_size=10)
+            
+            publisher[deviceName].publish('  X: ' + str(x) + '  Y: ' + str(y) + '  Z: ' + str(z) + '  Pitch: ' + str(pitch) + '  Roll: ' + str(roll) + '  Yaw: ' + str(yaw))
 
         rate.sleep()
+
 
 if __name__ == '__main__':
     try:
