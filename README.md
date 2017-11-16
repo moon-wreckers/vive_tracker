@@ -64,15 +64,11 @@ catkin_make
 
 ```
 source ~/catkin_ws/devel/setup.bash
-rosrun vive_tracker vive_tracker.py
+roslaunch vive_tracker vive_tracker.launch
 ``` 
    1. Now open another terminal and run `rostopic echo /vive_tracker` to view the x y z roll pitch yaw output from the tracker.
 
-6. (Optional) Start RViz in another terminal with `rviz`, and run the below commands in seperate terminals to rotate the map frame to be the correct orientation for RViz.
-
-`rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 0.0 world map 100`
-
-`rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 1.5707 map vive_world 100`
+6. (Optional) Start RViz in another terminal with `rviz`
 
 7. (Optional) In the lower left corner of RViz click on `Add`, and scroll down the Add menu to add a `TF`. If all went well you should now be able to see the tracker moving in RViz. 
 
