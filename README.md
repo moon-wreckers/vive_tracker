@@ -14,13 +14,13 @@ SteamVR requires >4GB disk space
 
 `sudo apt-get install steam libsdl2-dev libvulkan-dev libudev-dev libssl-dev zlib1g-dev python-pip`
 
-   1. (Optional) Install these libraries to prevent some runtime warnings.
+  2. (Optional) Install these libraries to prevent some runtime warnings.
    
 `sudo apt-get install libxtst6:i386 libxrandr-dev:i386 libglib2.0-dev:i386 libgtk2.0-0:i386 libpulse0:i386`
    
-   1. Make Steam account & Log in.
+   3. Make Steam account & Log in.
    
-   1. (Recommended) Save your credentials while logging in, and once you do log in open the `Steam` Menu item in the top left corner and select `Go Offline`. This prevents Steam from updating every time you use the Vive Tracker.
+   4. (Recommended) Save your credentials while logging in, and once you do log in open the `Steam` Menu item in the top left corner and select `Go Offline`. This prevents Steam from updating every time you use the Vive Tracker.
 
 2. Install SteamVR 
 
