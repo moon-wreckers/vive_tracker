@@ -25,7 +25,6 @@ def convert_to_quaternion(pose_mat):
     r_x = (pose_mat[2][1]-pose_mat[1][2])/(4*r_w)
     r_y = (pose_mat[0][2]-pose_mat[2][0])/(4*r_w)
     r_z = (pose_mat[1][0]-pose_mat[0][1])/(4*r_w)
-
     x = pose_mat[0][3]
     y = pose_mat[1][3]
     z = pose_mat[2][3]
@@ -94,6 +93,10 @@ class vr_tracked_device():
     def get_pose_quaternion(self):
         pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
         return convert_to_quaternion(pose[self.index].mDeviceToAbsoluteTracking)
+
+    def get_pose_matrix(self):
+        pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
+        return pose[self.index].mDeviceToAbsoluteTracking
 
 class vr_tracking_reference(vr_tracked_device):
     def get_mode(self):

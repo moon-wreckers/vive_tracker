@@ -27,7 +27,36 @@ except Exception as ex:
   quit()
 
 v.print_discovered_objects()
-
+# Checks if a matrix is a valid rotation matrix.
+def isRotationMatrix(R) :
+    Rt = np.transpose(R)
+    shouldBeIdentity = np.dot(Rt, R)
+    I = np.identity(3, dtype = R.dtype)
+    n = np.linalg.norm(I - shouldBeIdentity)
+    return n < 1e-6
+ 
+ 
+# Calculates rotation matrix to euler angles
+# The result is the same as MATLAB except the order
+# of the euler angles ( x and z are swapped ).
+def rotationMatrixToEulerAngles(R) :
+ 
+    assert(isRotationMatrix(R))
+     
+    sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0])
+     
+    singular = sy < 1e-6
+ 
+    if  not singular :
+        x = math.atan2(R[2,1] , R[2,2])
+        y = math.atan2(-R[2,0], sy)
+        z = math.atan2(R[1,0], R[0,0])
+    else :
+        x = math.atan2(-R[1,2], R[1,1])
+        y = math.atan2(-R[2,0], sy)
+        z = 0
+ 
+    return np.array([x, y, z])
 def vive_tracker():
     rospy.init_node('vive_tracker_frame')
     broadcaster = { }
@@ -44,6 +73,9 @@ def vive_tracker():
             time = rospy.Time.now()
             if deviceName not in broadcaster:
                 broadcaster[deviceName] = tf.TransformBroadcaster()
+                broadcaster[deviceName + "_euler"] = tf.TransformBroadcaster()
+                broadcaster[deviceName + "_matrix"] = tf.TransformBroadcaster()
+                
             
             broadcaster[deviceName].sendTransform((x,y,z),
                             (qw,qx,qy,qz),
@@ -52,6 +84,13 @@ def vive_tracker():
                             "vive_world")
             # Publish a topic as euler angles
             [x,y,z,yaw,pitch,roll] = v.devices[deviceName].get_pose_euler()
+            y_rot = math.radians(pitch)
+            
+            broadcaster[deviceName + "_euler"].sendTransform((x,y,z),
+                            tf.transformations.quaternion_from_euler(roll,yaw,pitch),
+                            time,
+                            deviceName + "_euler",
+                            "vive_world")
             if deviceName not in publisher:
                 publisher[deviceName] = rospy.Publisher(deviceName, String, queue_size=10)
                 
@@ -65,7 +104,21 @@ def vive_tracker():
                 odom = Odometry()
                 odom.header.stamp = time
                 odom.header.frame_id = "vive_world"
-    
+                pose_mat = v.devices[deviceName].get_pose_matrix()
+                R = [[0 for x in range(3)] for y in range(3)]
+                for i in range(0,3):
+                    for j in range(0,3):
+                        R[i][j] = pose_mat[i][j]
+                print(str(round(R[0][0],3)) + "\t" + str(round(R[0][1],3)) + "\t" + str(round(R[0][2],3)))
+                print(str(round(R[1][0],3)) + "\t" + str(round(R[1][1],3)) + "\t" + str(round(R[1][2],3)))
+                print(str(round(R[2][0],3)) + "\t" + str(round(R[2][1],3)) + "\t" + str(round(R[2][2],3)))
+                [xrot,yrot,zrot] = rotationMatrixToEulerAngles(np.asarray(R))
+                print("")
+                broadcaster[deviceName + "_matrix"].sendTransform((pose_mat[0][3],pose_mat[1][3],pose_mat[2][3]),
+                                tf.transformations.quaternion_from_euler(xrot,yrot,zrot),
+                                time,
+                                deviceName + "_matrix",
+                                "vive_world")
                 # set the position
                 odom.pose.pose = Pose(Point(x, y, z), Quaternion(qx,qy,qz,qw))
     
