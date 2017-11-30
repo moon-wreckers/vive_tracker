@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-import rospy
-from std_msgs.msg import String
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
+import rospy
+from std_msgs.msg import String
 import triad_openvr
 import time
 import sys
@@ -32,22 +32,39 @@ def vive_tracker():
     broadcaster = { }
     publisher = { }
     rate = rospy.Rate(30) # 10hz
+    
+    P = np.mat([[1e-6, 0, 0], [0, 1e-6, 0], [0, 0, 1e-3]])
+    p_cov = np.zeros((6, 6))
+    # position covariance
+    p_cov[0:2,0:2] = P[0:2,0:2]
+    # orientation covariance for Yaw
+    # x and Yaw
+    p_cov[5,0] = p_cov[0,5] = P[2,0]
+    # y and Yaw
+    p_cov[5,1] = p_cov[1,5] = P[2,1]
+    # Yaw and Yaw
+    p_cov[5,5] = P[2,2]
+
     while not rospy.is_shutdown():
         # For each Vive Device
         for deviceName in v.devices:
             publish_name_str = v.devices[deviceName].get_serial().replace("-","_")
             # Broadcast the TF as a quaternion
-            [x, y, z, qw, qx, qy, qz] = v.devices[deviceName].get_pose_quaternion()
+            [x, y, z, qx, qy, qz, qw] = v.devices[deviceName].get_pose_quaternion()
             time = rospy.Time.now()
             if deviceName not in broadcaster:
                 broadcaster[deviceName] = tf.TransformBroadcaster()
                 
-            
+            # Rotate Vive Trackers 180, so Z+ comes out of the top of the Tracker
+            if "LHR" in v.devices[deviceName].get_serial():
+                [qx, qy, qz, qw] = tf.transformations.quaternion_multiply([qx, qy, qz, qw], tf.transformations.quaternion_from_euler(math.pi, 0.0, -math.pi/2.0))
+
             broadcaster[deviceName].sendTransform((x,y,z),
-                            (qw,qx,qy,qz),
+                            (qx,qy,qz,qw),
                             time,
                             publish_name_str,
                             "vive_world")
+               
             # Publish a topic as euler angles
             [x,y,z,roll,pitch,yaw] = v.devices[deviceName].get_pose_euler()
             y_rot = math.radians(pitch)
@@ -60,6 +77,7 @@ def vive_tracker():
             
             if "reference" not in deviceName:
                 if deviceName + "_odom" not in publisher:
+    
                     publisher[deviceName + "_odom"] = rospy.Publisher(publish_name_str + "_odom", Odometry, queue_size=50)
                 # next, we'll publish the odometry message over ROS
                 odom = Odometry()
@@ -69,10 +87,13 @@ def vive_tracker():
                 odom.pose.pose = Pose(Point(x, y, z), Quaternion(qx,qy,qz,qw))
     
                 # set the velocity
-                odom.child_frame_id = "vive_world"
+                odom.child_frame_id = "ak1_base_link"
                 [vx, vy, vz, v_roll, v_pitch, v_yaw] = v.devices[deviceName].get_velocities()
                 odom.twist.twist = Twist(Vector3(vx, vy, vz), Vector3(v_roll, v_pitch, v_yaw))
-    
+                # This is all wrong but close enough for now
+                odom.pose.covariance = tuple(p_cov.ravel().tolist())
+                odom.twist.covariance = tuple(p_cov.ravel().tolist())
+  
                 # publish the message
                 publisher[deviceName + "_odom"].publish(odom)
         rate.sleep()
