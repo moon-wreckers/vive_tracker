@@ -93,9 +93,9 @@ def vive_tracker():
                 # This is all wrong but close enough for now
                 odom.pose.covariance = tuple(p_cov.ravel().tolist())
                 odom.twist.covariance = tuple(p_cov.ravel().tolist())
-  
-                # publish the message
-                publisher[deviceName + "_odom"].publish(odom)
+                if not (x == 0.0 and y == 0.0 and z == 0.0 and vx == 0.0 and vy == 0.0 and vz == 0.0 and v_roll == 0.0 and v_pitch == 0.0 and v_yaw == 0.0):
+                    # publish the message
+                    publisher[deviceName + "_odom"].publish(odom)
         rate.sleep()
 
 

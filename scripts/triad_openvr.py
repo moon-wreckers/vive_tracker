@@ -190,7 +190,9 @@ class vr_tracked_device():
         [v_x, v_y, v_z] = pose[self.index].vVelocity
         [a_x, a_y, a_z] = pose[self.index].vAngularVelocity 
         return [v_x, v_y, v_z, a_x, a_y, a_z]
-
+    def is_connected(self):
+        tracking = self.vr.isTrackedDeviceConnected(self.index)
+        return tracking
 class vr_tracking_reference(vr_tracked_device):
     def get_mode(self):
         return self.vr.getStringTrackedDeviceProperty(self.index,openvr.Prop_ModeLabel_String).decode('utf-8').upper()
