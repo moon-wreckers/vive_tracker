@@ -38,14 +38,23 @@ SteamVR requires >4GB disk space
 
 `sudo pip install -U pip openvr`
 
-7. (Optional) Disable the headset requirement with your preferred text editor
+7. Disable the headset requirement with your preferred text editor
 
 `gedit ~/.steam/steam/steamapps/common/SteamVR/resources/settings/default.vrsettings`
 
    1. Change the third line from `"requireHmd" : true,` to `"requireHmd" : false,`
 
    1. Save and exit the settings document.
-   
+
+`gedit gedit ~/.steam/steam/config/steamvr.vrsettings`
+
+   1. Add "activateMultipleDrivers" : true, "forcedDriver": "null", to near the top of the "steamvr" section of your steamvr.vrsettings config file.
+
+`gedit ~/.steam/steam/steamapps/common/SteamVR/drivers/null/resources/settings/default.vrsettings`
+
+   1. Set enable to true in null driver to enable it.
+
+  [Source](https://www.reddit.com/r/Vive/comments/6uo053/how_to_use_steamvr_tracked_devices_without_a_hmd/) 
 8. Install this project in your catkin workspace.
 
 ```

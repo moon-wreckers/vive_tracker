@@ -31,6 +31,8 @@ def vive_tracker():
     rospy.init_node('vive_tracker_frame')
     broadcaster = { }
     publisher = { }
+    listener = tf.TransformListener()
+
     rate = rospy.Rate(30) # 10hz
     
     P = np.mat([[1e-6, 0, 0], [0, 1e-6, 0], [0, 0, 1e-3]])
@@ -48,6 +50,10 @@ def vive_tracker():
     while not rospy.is_shutdown():
         # For each Vive Device
         for deviceName in v.devices:
+            
+            if 'Null' in v.devices[deviceName].get_serial():
+              del v.devices[deviceName]
+              break
             publish_name_str = v.devices[deviceName].get_serial().replace("-","_")
             # Broadcast the TF as a quaternion
             [x, y, z, qx, qy, qz, qw] = v.devices[deviceName].get_pose_quaternion()
@@ -77,7 +83,7 @@ def vive_tracker():
             
             if "reference" not in deviceName:
                 if deviceName + "_odom" not in publisher:
-    
+                    publisher["ring_odom"] = rospy.Publisher("ring_odom", Odometry, queue_size=50)
                     publisher[deviceName + "_odom"] = rospy.Publisher(publish_name_str + "_odom", Odometry, queue_size=50)
                 # next, we'll publish the odometry message over ROS
                 odom = Odometry()
@@ -96,6 +102,14 @@ def vive_tracker():
                 if not (x == 0.0 and y == 0.0 and z == 0.0 and vx == 0.0 and vy == 0.0 and vz == 0.0 and v_roll == 0.0 and v_pitch == 0.0 and v_yaw == 0.0):
                     # publish the message
                     publisher[deviceName + "_odom"].publish(odom)
+                    # Publish the ring position
+                    try: 
+                        (ring_trans,ring_rot) = listener.lookupTransform("vive_world", "ring" , time)
+                        odom.pose.pose = Pose(Point(ring_trans[0],ring_trans[1],ring_trans[2]), Quaternion(qx, qy, qz, qw))
+                        publisher["ring_odom"].publish(odom)
+                    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                        continue
+                    
         rate.sleep()
 
 
