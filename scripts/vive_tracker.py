@@ -10,31 +10,30 @@ import tf
 import numpy as np
 import math
 
-print('\n')
-try:
-  v = triad_openvr.triad_openvr()
-except Exception as ex:
-  if (type(ex).__name__ == 'OpenVRError' and ex.args[0] == 'VRInitError_Init_HmdNotFoundPresenceFailed (error number 126)'):
-    print('Cannot find the tracker.')
-    print('Is SteamVR running?')
-    print('Is the Vive Tracker turned on, connected, and paired with SteamVR?')
-    print('Are the Lighthouse Base Stations powered and in view of the Tracker?\n\n')
-  else:
-    template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-    message = template.format(type(ex).__name__, ex.args)
-    print message
-  #print(ex.args)
-  quit()
-
-v.print_discovered_objects()
 def vive_tracker():
     rospy.init_node('vive_tracker_frame')
     broadcaster = { }
     publisher = { }
     listener = tf.TransformListener()
-
     rate = rospy.Rate(30) # 10hz
+    deviceCount = 0
     
+    try:
+      v = triad_openvr.triad_openvr()
+    except Exception as ex:
+      if (type(ex).__name__ == 'OpenVRError' and ex.args[0] == 'VRInitError_Init_HmdNotFoundPresenceFailed (error number 126)'):
+        print('Cannot find the tracker.')
+        print('Is SteamVR running?')
+        print('Is the Vive Tracker turned on, connected, and paired with SteamVR?')
+        print('Are the Lighthouse Base Stations powered and in view of the Tracker?\n\n')
+      else:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(ex).__name__, ex.args)
+        print message
+      #print(ex.args)
+      quit()
+    
+    v.print_discovered_objects()
     P = np.mat([[1e-6, 0, 0], [0, 1e-6, 0], [0, 0, 1e-3]])
     p_cov = np.zeros((6, 6))
     # position covariance
@@ -48,6 +47,9 @@ def vive_tracker():
     p_cov[5,5] = P[2,2]
 
     while not rospy.is_shutdown():
+        #if (deviceCount != v.get_device_count()):
+        #    v = triad_openvr.triad_openvr()
+        #    deviceCount = v.get_device_count()
         # For each Vive Device
         for deviceName in v.devices:
             

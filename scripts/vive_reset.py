@@ -37,6 +37,7 @@ if __name__ == '__main__':
             (trans,rot) = listener.lookupTransform('vive_world', tracker_name, rospy.Time(0))
             br.sendTransform(trans, rot, rospy.Time.now(),'zero_location','vive_world')
             inv_trans = trans[:]
+            inv_rot = rot[:]
             #rospy.loginfo('Inverse transform found.')
             tf_count += 1
         rate.sleep()
@@ -44,6 +45,11 @@ if __name__ == '__main__':
     inv_trans[0] = -trans[0]
     inv_trans[1] = -trans[1]
     inv_trans[2] = -trans[2]
+    inv_rot[0] = -rot[0]
+    inv_rot[1] = -rot[1]
+    inv_rot[2] = -rot[2]
+    inv_rot[3] = -rot[3]
+
     br.sendTransform(inv_trans, [0,0,0,1], rospy.Time.now(),'vive_world','vive_world_orientation')
     while  not rospy.is_shutdown():
         br.sendTransform(trans, rot, rospy.Time.now(),'zero_location','vive_world')

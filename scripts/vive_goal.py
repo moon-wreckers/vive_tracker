@@ -20,14 +20,17 @@ if __name__ == '__main__':
     base_station_frame = ""
     # Get the first tracked device that isn't a reference frame.
     for name in topic_names:
-        if "LHB" not in name[0]:
+
+        if "LHR" in name[0]:
             tracker_name = name[0].replace('/vive/','').replace('_odom','')
             print(tracker_name)
-        elif "LHB-D3CC0B26" not in name[0]:
+        elif "LHB" in name[0]:
             base_station_frame = name[0].replace('/vive','')
+            print('Base Station: ' + base_station_frame)
     rate = rospy.Rate(1.0)
     while not rospy.is_shutdown():
         time = rospy.Time(0)
+
         if tracker_name is "":
             continue
         try:
@@ -42,8 +45,11 @@ if __name__ == '__main__':
             inv_trans = trans[:]
             #rospy.loginfo('Inverse transform found.')
             tf_count += 1
+        else:
+          break
         rate.sleep()
-        break
+
+    print('Publishing vive_goal.');
     while  not rospy.is_shutdown():
-        br.sendTransform(trans, rot, rospy.Time.now(),'goal_location',base_station_frame)
+        br.sendTransform(trans, rot, rospy.Time.now(),'vive_goal',base_station_frame)
     #rospy.signal_shutdown("Tracker reset to origin.")
