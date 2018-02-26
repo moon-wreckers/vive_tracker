@@ -10,17 +10,19 @@ x86 architecture
 SteamVR requires >4GB disk space
 
 # Installation Instructions
-1. Install Steam, as well as Python and OpenVR dependencies
+1. [Install the latest VulkanSDK from here.](https://vulkan.lunarg.com/sdk/home#linux)
 
-`sudo apt-get install steam libsdl2-dev libvulkan-dev libudev-dev libssl-dev zlib1g-dev python-pip`
 
-  2. (Optional) Install these libraries to prevent some runtime warnings.
+2. Install Steam 
+`sudo apt-get install steam libsdl2-dev libudev-dev libssl-dev zlib1g-dev python-pip`
+
+     1. (Optional) Install these libraries to prevent some runtime warnings `sudo apt-get install libxtst6:i386 libxrandr-dev:i386 libglib2.0-dev:i386 libgtk2.0-0:i386 libpulse0:i386`
    
-`sudo apt-get install libxtst6:i386 libxrandr-dev:i386 libglib2.0-dev:i386 libgtk2.0-0:i386 libpulse0:i386`
+      2. Open steam with `steam` command, or through the Ubuntu menu. Make a Steam account & Log in.
+  
+      3. Enable the Steam beta through the Steam Menu -> Settings -> Account -> Beta Participation. [See the video here to see how to enable the beta.](https://www.youtube.com/watch?v=7AFUcj3HpvE)
    
-   3. Make Steam account & Log in.
-   
-   4. (Recommended) Save your credentials while logging in, and once you do log in open the `Steam` Menu item in the top left corner and select `Go Offline`. This prevents Steam from updating every time you use the Vive Tracker.
+      4. (Recommended) Save your credentials while logging in, and once you do log in open the `Steam` Menu item in the top left corner and select `Go Offline`. This prevents Steam from updating every time you use the Vive Tracker.
 
 2. Install SteamVR 
 
@@ -44,17 +46,16 @@ SteamVR requires >4GB disk space
 
    1. Change the third line from `"requireHmd" : true,` to `"requireHmd" : false,`
 
-   1. Save and exit the settings document.
-
-`gedit gedit ~/.steam/steam/config/steamvr.vrsettings`
-
-   1. Add "activateMultipleDrivers" : true, "forcedDriver": "null", to near the top of the "steamvr" section of your steamvr.vrsettings config file.
+   2. Add "activateMultipleDrivers" : true, "forcedDriver": "null", to near the top of the "steamvr" section of your steamvr.vrsettings config file.
+   
+   3. Open `default.vrsettings`
 
 `gedit ~/.steam/steam/steamapps/common/SteamVR/drivers/null/resources/settings/default.vrsettings`
 
-   1. Set enable to true in null driver to enable it.
+   1. Set enable (line 3) to true in null driver to enable it.
 
   [Source](https://www.reddit.com/r/Vive/comments/6uo053/how_to_use_steamvr_tracked_devices_without_a_hmd/) 
+  
 8. Install this project in your catkin workspace.
 
 ```
