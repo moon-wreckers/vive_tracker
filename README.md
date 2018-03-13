@@ -1,7 +1,7 @@
 This ROS Indigo Node publishes pose data from HTC Vive Tracker Ubuntu 14.04.
 
 
-# Prerequesites
+# Prerequisites
 
 Up to date graphics drivers
 
