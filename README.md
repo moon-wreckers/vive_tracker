@@ -1,4 +1,5 @@
 [![Link to a video of this project in action.](https://img.youtube.com/vi/fvbSUXGViSY/0.jpg)](https://youtu.be/fvbSUXGViSY)
+
 This ROS Indigo Node publishes pose data from HTC Vive Tracker Ubuntu 14.04. 
 
 ## Note: This depends on SteamVR on Ubuntu. Be advised that SteamVR is not fully supported on Ubuntu and may not install properly with your version of Ubuntu/graphics drivers/hardware. I recommend you try to get SteamVR installed on your computer before considering this node for your project. 
