@@ -235,7 +235,9 @@ class triad_openvr():
         for i in range(len(self.object_names[self.devices[new_device_name].device_class])):
             if self.object_names[self.devices[new_device_name].device_class][i] == old_device_name:
                 self.object_names[self.devices[new_device_name].device_class][i] = new_device_name
-    
+    def get_device_count(self):
+      return len(self.devices)
+
     def print_discovered_objects(self):   
         for device_type in self.object_names:
             plural = device_type
